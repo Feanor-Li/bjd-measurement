@@ -11,24 +11,30 @@
     <h1 class="page-title">BJD Measurements</h1>
 
     <div class="controls">
-        <label for="size-select">Select BJD Size:</label>
+        <div>
+            <label for="size-select">Select BJD Size:</label>
         <select id="size-select">
             <option value="" disabled selected>-- Select a Size --</option>
             <option value="1/3">1/3</option>
             <option value="1/4">1/4</option>
             <option value="75">75cm</option>
         </select>
+        </div>
+        
+        <div>
+            <label for="body-select">Select BJD Body:</label>
+            <select id="body-select">
+                <option value="" disabled selected>-- Select a Body --</option>
+            </select>
+        </div>
 
-        <label for="body-select">Select BJD Body:</label>
-        <select id="body-select">
-            <option value="" disabled selected>-- Select a Body --</option>
-        </select>
-
-        <label for="reference-select">Select Reference Body:</label>
+        <div>
+            <label for="reference-select">Select Reference Body:</label>
         <select id="reference-select">
             <option value="" disabled selected>-- Select a Reference Body --</option>
         </select>
-
+        </div>
+        
         <button id="display-button">Display</button>
     </div>
 
