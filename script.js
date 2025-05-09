@@ -61,17 +61,17 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     function fetchMeasurementData(selectedBody, selectedReference) {
-        const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_NAME}?key=${API_KEY}`;
+        const url = `https://docs.google.com/spreadsheets/d/e/2PACX-1vSlSuswa0CMcuy0GOI6TOb_4ltph-XR7C8IvUrEWaoTV8mYTZyACVmATJpf9V5A6ZWzZTIpUEaKJjnQ/pub?gid=0&single=true&output=csv`;
 
         fetch(url)
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-                return response.json();
+                return response.text();
             })
-            .then(data => {
-                processSheetData(data.values, selectedBody, selectedReference);
+            .then(csvValue => {
+                processSheetData(csvValue, selectedBody, selectedReference);
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
@@ -81,13 +81,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function processSheetData(dataValues, selectedBody, selectedReference) {
-        if (!dataValues || dataValues.length === 0) {
-            errorMessageDiv.textContent = 'No data found in the Google Sheet.';
-            resultsDiv.innerHTML = '';
-            return;
-        }
+        const rows = dataValues.split('\n').map(row => row.split(','));
 
-        const headerRow = dataValues[0];
+        const headerRow = rows.shift();
         const bodyIndex = headerRow.findIndex(header => header.toLowerCase() === selectedBody.toLowerCase());
         const referenceIndex = headerRow.findIndex(header => header.toLowerCase() === selectedReference.toLowerCase());
 
@@ -102,8 +98,8 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        let bodyData = dataValues.find(row => row[bodyIndex]);
-        let referenceData = dataValues.find(row => row[referenceIndex]);
+        let bodyData = rows.find(row => row[bodyIndex]);
+        let referenceData = rows.find(row => row[referenceIndex]);
 
         if (!bodyData) {
             errorMessageDiv.textContent = `No data found for body "${selectedBody}".`;
