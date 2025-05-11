@@ -1,7 +1,3 @@
-const SPREADSHEET_ID = 'YOUR_SPREADSHEET_ID'; // Replace with your actual spreadsheet ID
-const SHEET_NAME = 'Sheet1';         // Replace with the name of your sheet
-const API_KEY = 'YOUR_API_KEY'; // Replace with your API key
-
 document.addEventListener('DOMContentLoaded', function() {
     const sizeSelect = document.getElementById('size-select');
     const bodySelect = document.getElementById('body-select');
@@ -16,26 +12,36 @@ document.addEventListener('DOMContentLoaded', function() {
             { name: 'dfh', value: 'dfh' }
         ],
         '1/3': [
-            { name: 'iplehouse', value: 'iplehouse' },
-            { name: 'as60', value: 'as60' }
+            { name: 'sdgr', value: 'sdgr' },
+            { name: 'sd16', value: 'sd16' },
+            { name: 'yid', value: 'yid'}
         ],
         '75': [
             { name: 'id75', value: 'id75' }
         ]
     };
 
+    const urlList = {
+        '1/3': `https://docs.google.com/spreadsheets/d/e/2PACX-1vSlSuswa0CMcuy0GOI6TOb_4ltph-XR7C8IvUrEWaoTV8mYTZyACVmATJpf9V5A6ZWzZTIpUEaKJjnQ/pub?gid=0&single=true&output=csv`
+    }
+
     sizeSelect.addEventListener('change', function() {
         const selectedSize = this.value;
         bodySelect.innerHTML = '<option value="" disabled selected>-- Select a Body --</option>';
         referenceSelect.innerHTML = '<option value="" disabled selected>-- Select a Reference Body --</option>';
 
-        if (bodyLists[selectedSize]) {
-            bodyLists[selectedSize].forEach(body => {
-                bodySelect.add(new Option(body.name, body.value));
-                referenceSelect.add(new Option(body.name, body.value)); // Populate reference select as well
+        
+        fetchSupportedDolls(selectedSize)
+            .then(supportedDolls => {
+                console.log("Supported Dolls:", supportedDolls);
+                supportedDolls.forEach(element => {
+            bodySelect.add(new Option(element, element));
+            referenceSelect.add(new Option(element, element));
+        });
+            })
+            .catch(error => {
+                console.error("Failed to get supported dolls:", error);
             });
-        }
-        // Disable the reference dropdown if size is not selected.
         referenceSelect.disabled = !selectedSize;
 
     });
@@ -57,12 +63,10 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        fetchMeasurementData(selectedBody, selectedReference);
+        fetchMeasurementData(selectedBody, selectedReference, urlList[selectedSize]);
     });
 
-    function fetchMeasurementData(selectedBody, selectedReference) {
-        const url = `https://docs.google.com/spreadsheets/d/e/2PACX-1vSlSuswa0CMcuy0GOI6TOb_4ltph-XR7C8IvUrEWaoTV8mYTZyACVmATJpf9V5A6ZWzZTIpUEaKJjnQ/pub?gid=0&single=true&output=csv`;
-
+    function fetchMeasurementData(selectedBody, selectedReference, url) {
         fetch(url)
             .then(response => {
                 if (!response.ok) {
@@ -80,26 +84,91 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
 
+async function fetchSupportedDolls(selectedSize) {
+    const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSlSuswa0CMcuy0GOI6TOb_4ltph-XR7C8IvUrEWaoTV8mYTZyACVmATJpf9V5A6ZWzZTIpUEaKJjnQ/pub?gid=1519853264&single=true&output=csv";
+
+    try {
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const csvValue = await response.text();
+
+        const rows = csvValue.split('\n').map(row => row.split(','));
+
+        // Check if there's at least a header row
+        if (rows.length === 0) {
+             console.warn("CSV is empty or malformed.");
+             return []; // Return empty array if no data
+        }
+
+        const sizes = rows.shift(); // Get header row and remove it from data rows
+
+        console.info("Selected Size:", selectedSize);
+        console.info("Headers/Sizes:", sizes);
+
+        // Find the index, handling potential whitespace and case
+        const selectedIndex = sizes.findIndex(header => header.trim().toLowerCase() === selectedSize.toLowerCase());
+
+        console.info("Selected Index:", selectedIndex);
+
+        // Handle case where size is not found
+        if (selectedIndex === -1) {
+            console.warn(`Size "${selectedSize}" not found in headers.`);
+            return []; // Return empty array if size not found
+        }
+
+        // Extract the column data based on the index
+        const bodyNames = rows.map(row => {
+             // Add a check for row length to prevent errors on malformed rows
+             if (row.length > selectedIndex) {
+                 return row[selectedIndex].trim(); // Trim whitespace from data too
+             } else {
+                 console.warn(`Row is shorter than expected at index ${selectedIndex}:`, row);
+                 return undefined; // Or handle as appropriate
+             }
+        }).filter(name => name !== undefined && name !== '');
+
+        return bodyNames;
+
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        if (typeof resultsDiv !== 'undefined') {
+           resultsDiv.innerHTML = '';
+        }
+        return [];
+    }
+}
+
     function processSheetData(dataValues, selectedBody, selectedReference) {
         const rows = dataValues.split('\n').map(row => row.split(','));
 
-        const headerRow = rows.shift();
-        const bodyIndex = headerRow.findIndex(header => header.toLowerCase() === selectedBody.toLowerCase());
-        const referenceIndex = headerRow.findIndex(header => header.toLowerCase() === selectedReference.toLowerCase());
+        const headerRow = rows.shift(); // this represents measurement fields
+        const bjdnames = rows.map(row => row[0]); // this extracts the names of dolls
+        console.info(bjdnames);
+        const selectedIndex = bjdnames.findIndex(header => header.toLowerCase() === selectedBody.toLowerCase());
+        const referenceIndex = bjdnames.findIndex(header => header.toLowerCase() === selectedReference.toLowerCase());
 
-        if (bodyIndex === -1) {
-            errorMessageDiv.textContent = `Body "${selectedBody}" not found in the Google Sheet header row.  Available names are: ${headerRow.join(", ")}`;
+        if (selectedIndex === -1) {
+            errorMessageDiv.textContent = `Body "${selectedBody}" not found in the database.`;
             resultsDiv.innerHTML = '';
             return;
         }
          if (referenceIndex === -1) {
-            errorMessageDiv.textContent = `Reference Body "${selectedReference}" not found in the Google Sheet header row. Available names are: ${headerRow.join(", ")}`;
+            errorMessageDiv.textContent = `Reference Body "${selectedReference}" not found in the database`;
             resultsDiv.innerHTML = '';
             return;
         }
 
-        let bodyData = rows.find(row => row[bodyIndex]);
-        let referenceData = rows.find(row => row[referenceIndex]);
+        console.info('reference index is ', referenceIndex, 'reference body is ', selectedReference);
+
+        let bodyData = rows[selectedIndex];
+        let referenceData = rows[referenceIndex];
+
+        console.info(rows);
+        console.info(referenceData);
 
         if (!bodyData) {
             errorMessageDiv.textContent = `No data found for body "${selectedBody}".`;
@@ -124,7 +193,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
 
-        let resultsHTML = '<h3>Measurements:</h3><table><tr><th>Measurement</th><th>' + selectedBody + '</th><th>' + selectedReference + '</th><th>Difference</th></tr>';
+        let resultsHTML = '<h3>Measurements:</h3><table><tr><th>Measurement (unit: cm)</th><th>' + selectedBody + '</th><th>' + selectedReference + '</th><th>Difference</th></tr>';
         for (let i = 0; i < headerRow.length; i++) {
             if (i !== 0) { // Skip the first column (usually the category/measurement name)
                 const measurementName = headerRow[i];
