@@ -6,23 +6,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const resultsDiv = document.getElementById('results');
     const errorMessageDiv = document.getElementById('error-message');
 
-    const bodyLists = {
-        '1/4': [
-            { name: 'coralreef', value: 'coralreef' },
-            { name: 'dfh', value: 'dfh' }
-        ],
-        '1/3': [
-            { name: 'sdgr', value: 'sdgr' },
-            { name: 'sd16', value: 'sd16' },
-            { name: 'yid', value: 'yid'}
-        ],
-        '75': [
-            { name: 'id75', value: 'id75' }
-        ]
-    };
-
     const urlList = {
-        '1/3': `https://docs.google.com/spreadsheets/d/e/2PACX-1vSlSuswa0CMcuy0GOI6TOb_4ltph-XR7C8IvUrEWaoTV8mYTZyACVmATJpf9V5A6ZWzZTIpUEaKJjnQ/pub?gid=0&single=true&output=csv`
+        '1/3 girl': `https://docs.google.com/spreadsheets/d/e/2PACX-1vSlSuswa0CMcuy0GOI6TOb_4ltph-XR7C8IvUrEWaoTV8mYTZyACVmATJpf9V5A6ZWzZTIpUEaKJjnQ/pub?gid=0&single=true&output=csv`,
+        '1/4 girl': `https://docs.google.com/spreadsheets/d/e/2PACX-1vSlSuswa0CMcuy0GOI6TOb_4ltph-XR7C8IvUrEWaoTV8mYTZyACVmATJpf9V5A6ZWzZTIpUEaKJjnQ/pub?gid=946255421&single=true&output=csv`,
+        '68 boy': `https://docs.google.com/spreadsheets/d/e/2PACX-1vSlSuswa0CMcuy0GOI6TOb_4ltph-XR7C8IvUrEWaoTV8mYTZyACVmATJpf9V5A6ZWzZTIpUEaKJjnQ/pub?gid=1038553033&single=true&output=csv`
     }
 
     sizeSelect.addEventListener('change', function() {
