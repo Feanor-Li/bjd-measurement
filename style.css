@@ -29,6 +29,33 @@ body {
     max-width: 400px;
 }
 
+.disclaimer-block {
+    border: 1px solid #ccc;
+    padding: 15px;
+    margin: 20px 0;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    font-family: sans-serif;
+    color: #333;
+}
+
+.disclaimer-block h2 {
+    margin-top: 0;
+    color: #555;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+
+.disclaimer-block p {
+    margin-bottom: 10px;
+    line-height: 1.6;
+}
+
+.disclaimer-block p:last-child {
+    margin-bottom: 0;
+}
+
 label {
     font-weight: bold;
     display: block;
