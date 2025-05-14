@@ -7,9 +7,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const errorMessageDiv = document.getElementById('error-message');
 
     const urlList = {
-        '1/3 girl': `https://docs.google.com/spreadsheets/d/e/2PACX-1vSlSuswa0CMcuy0GOI6TOb_4ltph-XR7C8IvUrEWaoTV8mYTZyACVmATJpf9V5A6ZWzZTIpUEaKJjnQ/pub?gid=0&single=true&output=csv`,
-        '1/4 girl': `https://docs.google.com/spreadsheets/d/e/2PACX-1vSlSuswa0CMcuy0GOI6TOb_4ltph-XR7C8IvUrEWaoTV8mYTZyACVmATJpf9V5A6ZWzZTIpUEaKJjnQ/pub?gid=946255421&single=true&output=csv`,
-        '68 boy': `https://docs.google.com/spreadsheets/d/e/2PACX-1vSlSuswa0CMcuy0GOI6TOb_4ltph-XR7C8IvUrEWaoTV8mYTZyACVmATJpf9V5A6ZWzZTIpUEaKJjnQ/pub?gid=1038553033&single=true&output=csv`
+        '1/3 girl': `bjd measurements - 1_3 dolls(girl).csv`,
+        '1/4 girl': `bjd measurements - 1_4 dolls(girl).csv`,
+        '68 boy': `bjd measurements - 68 boys.csv`
     }
 
     sizeSelect.addEventListener('change', function() {
@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
 async function fetchSupportedDolls(selectedSize) {
-    const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSlSuswa0CMcuy0GOI6TOb_4ltph-XR7C8IvUrEWaoTV8mYTZyACVmATJpf9V5A6ZWzZTIpUEaKJjnQ/pub?gid=1519853264&single=true&output=csv";
+    const url = "bjd measurements - index.csv";
 
     try {
         const response = await fetch(url);
